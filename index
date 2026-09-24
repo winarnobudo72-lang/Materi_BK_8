@@ -1,0 +1,213 @@
+import Link from "next/link";
+import Image from "next/image";
+import Clock from "@/components/Clock";
+import { FlowRibbon } from "@/components/Flowchart";
+import { getContent } from "@/lib/repo";
+
+export const dynamic = "force-dynamic";
+
+export default async function Beranda() {
+  const { meta, sections, slides, lkpd, quiz } = await getContent();
+
+  return (
+    <div>
+      {/* ——— Hero: kertas manila + ilustrasi risograph ——— */}
+      <section className="relative overflow-hidden border-b-[3px] border-ink">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero.jpg"
+            alt="Suasana kantin sekolah dengan papan jadwal"
+            fill
+            priority
+            className="riso object-cover object-center opacity-90"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/85 to-paper/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-paper/60" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1240px] px-5 pt-14 pb-16 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] items-start">
+          <div>
+            <p className="mono-label text-stamp">
+              Modul Ajar Interaktif · Informatika · Fase D
+            </p>
+            <h1 className="display text-[clamp(44px,8vw,96px)] mt-4 max-w-[13ch]">
+              {meta.title}
+            </h1>
+            <p className="mt-6 measure text-[17px] text-ink/85">{meta.subtitle}</p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/materi" className="btn">
+                Buka Materi
+              </Link>
+              <Link href="/slides" className="btn btn-ghost">
+                Slide Presentasi
+              </Link>
+              <Link href="/lkpd" className="btn btn-ghost">
+                Kerjakan LKPD
+              </Link>
+              <Link href="/kuis" className="btn btn-ghost">
+                Mulai Kuis
+              </Link>
+            </div>
+          </div>
+
+          <div className="lg:pt-4 space-y-4">
+            <Clock />
+            <div className="panel p-5">
+              <p className="mono-label text-ink-soft">Identitas Modul</p>
+              <dl className="mt-3 mono text-[12.5px] leading-6">
+                {[
+                  ["Sekolah", meta.school],
+                  ["Fase / Kelas", meta.phase],
+                  ["Guru", meta.teacher],
+                  ["Materi", meta.material],
+                  ["Alokasi", meta.time],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex gap-3 border-b border-ink/10 py-1.5 last:border-0">
+                    <dt className="w-[86px] shrink-0 text-ink-soft uppercase tracking-[0.12em] text-[10.5px] pt-[3px]">
+                      {k}
+                    </dt>
+                    <dd className="min-w-0">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ——— Capaian + Profil Pelajar (marginalia) ——— */}
+      <section className="mx-auto max-w-[1240px] px-5 py-16 grid gap-10 lg:grid-cols-[minmax(0,62ch)_minmax(0,1fr)]">
+        <div>
+          <p className="mono-label text-stamp">Standar · Capaian Pembelajaran</p>
+          <h2 className="display text-[38px] mt-3">Yang harus dikuasai peserta didik</h2>
+          <p className="mt-5 text-[16.5px] leading-[1.75]">{meta.capaian}</p>
+
+          <div className="mt-10 rule-thick" />
+          <p className="mono-label text-stamp mt-8">Tujuan Pembelajaran</p>
+          <p className="mt-3 text-[16.5px] leading-[1.75]">{meta.tujuan}</p>
+
+          <p className="mono-label text-stamp mt-8">Alur Tujuan Pembelajaran</p>
+          <p className="mt-3 text-[16.5px] leading-[1.75]">{meta.atp}</p>
+        </div>
+
+        <aside className="lg:sticky lg:top-32 self-start">
+          <div className="panel p-6 border-l-[3px] border-l-stamp">
+            <p className="mono-label text-stamp">Dimensi Profil Pelajar</p>
+            <p className="mt-3 text-[15px] leading-[1.7]">{meta.profilPelajar}</p>
+          </div>
+          <div className="mt-6 border border-ink/25 p-6 bg-paper-2/50">
+            <p className="mono-label text-ink-soft">Saran Penggunaan</p>
+            <ol className="mt-3 mono text-[12.5px] leading-7 list-none">
+              <li>01 — Baca materi bab 01–05.</li>
+              <li>02 — Simak slide presentasi.</li>
+              <li>03 — Kerjakan LKPD 5 aktivitas.</li>
+              <li>04 — Uji pemahaman lewat kuis 20 soal acak.</li>
+              <li>05 — Tulis kesan pada kolom komentar.</li>
+            </ol>
+          </div>
+        </aside>
+      </section>
+
+      {/* ——— Pita alur ——— */}
+      <section className="border-y-[3px] border-ink bg-paper-2/50 py-12">
+        <div className="mx-auto max-w-[1240px] px-5">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="mono-label text-stamp">Empat Elemen Berpikir Komputasional</p>
+              <h2 className="display text-[34px] mt-2">Dari masalah nyata ke langkah yang pasti</h2>
+            </div>
+            <p className="mono text-[12px] text-ink-soft max-w-[38ch]">
+              Modul ini memakai satu alur kerja yang sama untuk setiap persoalan data
+              berstruktur sederhana.
+            </p>
+          </div>
+          <div className="mt-8 overflow-x-auto">
+            <div className="min-w-[760px]">
+              <FlowRibbon />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ——— Denah modul ——— */}
+      <section className="mx-auto max-w-[1240px] px-5 py-16">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h2 className="display text-[38px]">Denah Materi</h2>
+          <p className="mono-label text-ink-soft">
+            {sections.length} bab · {slides.length} slide · {lkpd.tasks.length} aktivitas LKPD ·{" "}
+            {quiz.questions.length} soal bank
+          </p>
+        </div>
+        <div className="mt-8 border-t-[3px] border-ink">
+          {sections.map((s) => (
+            <Link
+              key={s.id}
+              href={`/materi#${s.id}`}
+              className="group grid gap-5 sm:grid-cols-[64px_minmax(0,1fr)_180px] items-center border-b border-ink/20 py-6 hover:bg-paper-2/60 transition-colors"
+            >
+              <span className="stamp-box mono text-[13px] w-fit">{s.no}</span>
+              <span>
+                <span className="mono-label text-ink-soft">{s.kicker}</span>
+                <span className="block display text-[24px] mt-1 group-hover:text-stamp transition-colors">
+                  {s.title}
+                </span>
+                <span className="block text-[14.5px] text-ink/75 mt-2 measure">{s.lead}</span>
+              </span>
+              <span className="relative h-[104px] overflow-hidden border border-ink/25 paper-edge hidden sm:block">
+                <Image
+                  src={`/${s.image}`}
+                  alt={s.imageCaption}
+                  fill
+                  className="riso object-cover"
+                />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ——— Band kerja siswa ——— */}
+      <section className="mx-auto max-w-[1240px] px-5 pb-8">
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr_0.8fr]">
+          {[
+            {
+              href: "/lkpd",
+              label: "LKPD",
+              title: "Lembar Kerja Peserta Didik",
+              desc: `${lkpd.tasks.length} aktivitas. Nama dan kelas tersimpan bersama jawabanmu.`,
+              primary: true,
+            },
+            {
+              href: "/kuis",
+              label: "Kuis",
+              title: "20 soal acak dari 25 soal",
+              desc: `${quiz.intro.split(" ").slice(0, 14).join(" ")}…`,
+              primary: true,
+            },
+            {
+              href: "/slides",
+              label: "Slide",
+              title: "Presentasi kelas",
+              desc: `${slides.length} slide siap tayang dengan catatan guru.`,
+              primary: false,
+            },
+          ].map((card) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              className={`panel p-7 group transition-transform hover:-translate-y-1 ${
+                card.primary ? "" : "opacity-95"
+              }`}
+            >
+              <p className="mono-label text-stamp">{card.label}</p>
+              <p className="display text-[26px] mt-2">{card.title}</p>
+              <p className="text-[14.5px] text-ink/75 mt-3">{card.desc}</p>
+              <p className="mono text-[12px] mt-5 group-hover:text-stamp">Kerjakan →</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
