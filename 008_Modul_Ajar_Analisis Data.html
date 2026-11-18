@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Ajar & Ujian Interaktif - Analisis Data Kelas 8</title>
+    <style>
+        :root {
+            --primary: #1b4965;
+            --secondary: #62b6cb;
+            --accent: #bee9e8;
+            --bg: #f8f9fa;
+            --text: #2b2d42;
+            --card: #ffffff;
+            --danger: #e63946;
+            --success: #2a9d8f;
+            --warning: #e9c46a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .header h2, .header h3, .header h4 {
+            margin: 4px 0;
+            color: var(--primary);
+        }
+
+        /* Navigasi Tab */
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 18px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #4a5568;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Content Styling */
+        .content-section {
+            line-height: 1.7;
+        }
+
+        .content-section h3 {
+            color: var(--primary);
+            border-left: 4px solid var(--secondary);
+            padding-left: 10px;
+            margin-top: 25px;
+        }
+
+        .card-box {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        table, th, td {
+            border: 1px solid #cbd5e1;
+        }
+
+        th {
+            background-color: #e2e8f0;
+            color: var(--primary);
+            padding: 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+        }
+
+        .btn-print {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+            float: right;
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background-color: #2d3748;
+        }
+
+        /* Timer & Form Ujian */
+        .timer-container {
+            position: sticky;
+            top: 10px;
+            background: #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #cbd5e1;
+        }
+
+        .timer {
+            color: var(--danger);
+            font-size: 1.3rem;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .options label {
+            display: block;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .options label:hover {
+            background: #e2e8f0;
+            border-color: var(--primary);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 12px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #0e2a3a;
+        }
+
+        .btn-retry {
+            background-color: var(--warning);
+            color: #000;
+        }
+
+        .btn-retry:hover {
+            background-color: #d69e2e;
+        }
+
+        .btn-wa {
+            background-color: #25d366;
+        }
+
+        .btn-wa:hover {
+            background-color: #1eb956;
+        }
+
+        #result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .score-box {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--primary);
+        }
+
+        .status-msg {
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* ATURAN KHUSUS CETAK (PRINT) */
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+                color: #000000;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .tab-nav, .btn-print, .timer-container, #action-buttons, button {
+                display: none !important;
+            }
+            .tab-content {
+                display: none !important;
+            }
+            .tab-content.active {
+                display: block !important;
+            }
+            .card-box, table, th, td {
+                border: 1px solid #000000 !important;
+            }
+            textarea {
+                border: 1px solid #000000 !important;
+                height: 80px;
+            }
+            .options label {
+                border: 1px solid #666;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>MODUL AJAR & EVALUASI INTERAKTIF</h2>
+        <h3>Materi: Analisis Data (Pengolahan Data Lanjut)</h3>
+        <h4>SMP NEGERI 2 NGADIREJO</h4>
+        <p><small>Guru Pengampu: Budi Winarno, S.Kom. | Fase D - Kelas VIII</small></p>
+    </div>
+
+    <!-- Navigasi Tab -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="openTab('modul', event)">1. Modul Ajar</button>
+        <button class="tab-btn" onclick="openTab('materi', event)">2. Materi Lengkap</button>
+        <button class="tab-btn" onclick="openTab('lkpd', event)">3. LKPD</button>
+        <button class="tab-btn" onclick="openTab('kisi', event)">4. Kisi-Kisi Soal</button>
+        <button class="tab-btn" onclick="openTab('ujian', event)">5. Ujian Interaktif</button>
+    </div>
+
+    <!-- TAB 1: MODUL AJAR -->
+    <div id="modul" class="tab-content active content-section">
+        <div class="clearfix">
+            <button class="btn-print" onclick="window.print()">🖨️ Cetak Modul Ajar</button>
+        </div>
+        <h3>A. Informasi Umum</h3>
+        <p><strong>Mata Pelajaran:</strong> Informatika | <strong>Fase/Kelas:</strong> D / VIII | <strong>Alokasi Waktu:</strong> 2 JP (2 x 40 Menit)</p>
+        <p><strong>Satuan Pendidikan:</strong> SMP Negeri 2 Ngadirejo | <strong>Penyusun:</strong> Budi Winarno, S.Kom.</p>
+
+        <h3>B. Elemen Pembelajaran</h3>
+        <p><strong>AD (Analisis Data)</strong></p>
+
+        <h3>C. Capaian Pembelajaran (CP)</h3>
+        <p>Pada akhir Fase D, peserta didik mampu mengolah, menganalisis, dan memvisualisasikan data secara efisien menggunakan perkakas pengolah lembar kerja (spreadsheet) dengan menerapkan fungsi pencarian lookup, fungsi referensi, visualisasi chart/grafik, serta meringkas data untuk mengambil keputusan berbasis data.</p>
+
+        <h3>D. Tujuan Pembelajaran (TP)</h3>
+        <ul>
+            <li>Peserta didik mampu menggunakan fungsi pencarian data VLOOKUP dan HLOOKUP secara tepat.</li>
+            <li>Peserta didik mampu menerapkan fungsi referensi alamat sel (Relatif, Absolut, dan Semi-Absolut).</li>
+            <li>Peserta didik mampu menyajikan data dalam bentuk visualisasi grafik (Batang, Garis, Pie) yang informatif.</li>
+            <li>Peserta didik mampu melakukan peringkasan data dengan fungsi statistik terfilter dan Pivot Table.</li>
+        </ul>
+
+        <h3>E. Kegiatan Pembelajaran</h3>
+        <ol>
+            <li><strong>Pendahuluan (10 Menit):</strong> Salam, doa, presensi, dan apersepsi tentang pentingnya analisis data tabel penjualan.</li>
+            <li><strong>Kegiatan Inti (60 Menit):</strong> Eksplorasi fungsi Lookup dan Reference, pengerjaan LKPD kasus lembar kerja, dan tes evaluasi interaktif.</li>
+            <li><strong>Penutup (10 Menit):</strong> Refleksi pembelajaran, pengunduhan rekap nilai, serta pelaporan hasil via WhatsApp guru.</li>
+        </ol>
+    </div>
+
+    <!-- TAB 2: MATERI LENGKAP -->
+    <div id="materi" class="tab-content content-section">
+        <div class="clearfix">
+            <button class="btn-print" onclick="window.print()">🖨️ Cetak Materi Lengkap</button>
+        </div>
+        
+        <h3>1. Pencarian Data dengan Fungsi Lookup</h3>
+        <div class="card-box">
+            <p>Fungsi Lookup digunakan untuk mencari data tertentu dalam sebuah tabel acuan berdasarkan nilai kunci.</p>
+            <ul>
+                <li><strong>VLOOKUP (Vertical Lookup):</strong> Mencari data pada tabel acuan berformat vertikal (kolom).<br>
+                <code>=VLOOKUP(nilai_kunci, tabel_acuan, nomor_kolom, [range_lookup])</code></li>
+                <li><strong>HLOOKUP (Horizontal Lookup):</strong> Mencari data pada tabel acuan berformat horizontal (baris).<br>
+                <code>=HLOOKUP(nilai_kunci, tabel_acuan, nomor_baris, [range_lookup])</code></li>
+            </ul>
+        </div>
+
+        <h3>2. Pencarian Data dengan Fungsi Reference</h3>
+        <div class="card-box">
+            <p>Fungsi referensi digunakan untuk mengambil alamat atau posisi data di dalam lembar kerja:</p>
+            <ul>
+                <li><strong>INDEX:</strong> Mengambil nilai sel berdasarkan posisi baris dan kolom tertentu dalam suatu rentang data.<br><code>=INDEX(array, nomor_baris, nomor_kolom)</code></li>
+                <li><strong>MATCH:</strong> Mencari posisi urutan (index) baris atau kolom dari suatu nilai dalam rentang satu dimensi.<br><code>=MATCH(lookup_value, lookup_array, [match_type])</code></li>
+                <li><strong>Referensi Alamat Sel:</strong>
+                    <ul>
+                        <li><strong>Relatif (A1):</strong> Berubah saat rumus disalin ke sel lain.</li>
+                        <li><strong>Absolut ($A$1):</strong> Nilai sel tetap/terkunci total saat disalin.</li>
+                        <li><strong>Semi-Absolut ($A1 / A$1):</strong> Terkunci hanya pada kolom atau baris saja.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <h3>3. Visualisasi Data (Data Visualization)</h3>
+        <div class="card-box">
+            <p>Visualisasi data adalah proses menyajikan data angka dalam bentuk grafik agar mudah dipahami trend dan komparasinga.</p>
+            <ul>
+                <li><strong>Grafik Batang (Column/Bar Chart):</strong> Cocok untuk membandingkan antar kategori data.</li>
+                <li><strong>Grafik Garis (Line Chart):</strong> Sangat baik untuk menampilkan tren data dari waktu ke waktu (time-series).</li>
+                <li><strong>Grafik Lingkaran (Pie Chart):</strong> Menampilkan proporsi atau persentase kontribusi komponen terhadap total.</li>
+            </ul>
+        </div>
+
+        <h3>4. Peringkasan Data (Data Summarization)</h3>
+        <div class="card-box">
+            <p>Peringkasan data bertujuan menyederhanakan data berukuran besar menjadi informasi terpusat.</p>
+            <ul>
+                <li><strong>Fungsi Statistik Bersyarat:</strong>
+                    <ul>
+                        <li><code>COUNTIF</code>: Menghitung jumlah sel yang memenuhi satu syarat tertentu.</li>
+                        <li><code>SUMIF</code>: Menjumlahkan nilai sel berdasarkan satu syarat tertentu.</li>
+                        <li><code>AVERAGEIF</code>: Menghitung rata-rata nilai sel berdasarkan satu syarat tertentu.</li>
+                    </ul>
+                </li>
+                <li><strong>Pivot Table:</strong> Fitur interaktif untuk meringkas, menganalisis, mengelompokkan, dan mengeksplorasi ribuan baris data secara cepat tanpa mengetik rumus manual.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TAB 3: LKPD -->
+    <div id="lkpd" class="tab-content content-section">
+        <div class="clearfix">
+            <button class="btn-print" onclick="window.print()">🖨️ Cetak LKPD</button>
+        </div>
+        <h3>Lembar Kerja Peserta Didik (LKPD) - Analisis Data</h3>
+        <p><strong>Nama Siswa:</strong> ........................................................... | <strong>Kelas/Absen:</strong> ................................</p>
+
+        <div class="card-box">
+            <h4>Kasus 1: Penerapan VLOOKUP dan HLOOKUP</h4>
+            <p>Diberikan tabel gaji karyawan. Jika tabel acuan golongan berformat vertikal, tuliskan struktur rumus VLOOKUP untuk mengisi kolom 'Gaji Pokok' berdasarkan sel Golongan di B5 dan rentang acuan $G$5:$I$10 kolom ke-2!</p>
+            <div class="input-group">
+                <label>Jawaban Rumus:</label>
+                <textarea rows="2" placeholder="Tuliskan rumus Excel Anda di sini..."></textarea>
+            </div>
+        </div>
+
+        <div class="card-box">
+            <h4>Kasus 2: Perbedaan Alamat Relatif dan Absolut</h4>
+            <p>Mengapa saat kita menyalin rumus perkalian diskon (=C5*$D$2) ke bawah, alamat sel $D$2 harus menggunakan simbol tanda dolar ($)? Jelaskan!</p>
+            <div class="input-group">
+                <label>Penjelasan Analisis:</label>
+                <textarea rows="3" placeholder="Tuliskan penjelasan Anda..."></textarea>
+            </div>
+        </div>
+
+        <div class="card-box">
+            <h4>Kasus 3: Pemilihan Jenis Grafik yang Tepat</h4>
+            <p>Seorang manajer ingin melihat perkembangan jumlah penjualan HP merek X dari bulan Januari hingga Desember. Jenis grafik mana yang paling tepat digunakan? Berikan alasannya!</p>
+            <div class="input-group">
+                <label>Jawaban & Alasan:</label>
+                <textarea rows="3" placeholder="Tuliskan analisis Anda..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: KISI-KISI SOAL -->
+    <div id="kisi" class="tab-content content-section">
+        <div class="clearfix">
+            <button class="btn-print" onclick="window.print()">🖨️ Cetak Kisi-Kisi Soal</button>
+        </div>
+        <h3>Kisi-Kisi Soal Evaluasi Analisis Data</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Materi / Sub-Materi</th>
+                    <th>Indikator Soal</th>
+                    <th>Bentuk Soal</th>
+                    <th>Jumlah</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Pencarian Data (Lookup)</td>
+                    <td>Mengidentifikasi dan menentukan sintaks fungsi VLOOKUP & HLOOKUP.</td>
+                    <td>Pilihan Ganda</td>
+                    <td>12 Soal</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Pencarian Data (Reference)</td>
+                    <td>Menganalisis penggunaan INDEX, MATCH, dan jenis alamat sel (Absolut/Relatif).</td>
+                    <td>Pilihan Ganda</td>
+                    <td>11 Soal</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Visualisasi Data</td>
+                    <td>Menentukan jenis grafik yang sesuai untuk karakteristik data tertentu.</td>
+                    <td>Pilihan Ganda</td>
+                    <td>11 Soal</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Peringkasan Data</td>
+                    <td>Menggunakan rumus statistik bersyarat (SUMIF, COUNTIF) dan Pivot Table.</td>
+                    <td>Pilihan Ganda</td>
+                    <td>11 Soal</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><small>*Aplikasi interaktif akan mengacak 45 bank soal secara otomatis dan menampilkan 40 soal dalam ujian.</small></p>
+    </div>
+
+    <!-- TAB 5: UJIAN INTERAKTIF -->
+    <div id="ujian" class="tab-content">
+        <div class="clearfix">
+            <button class="btn-print" onclick="window.print()">🖨️ Cetak Halaman Ujian / Soal</button>
+        </div>
+
+        <div id="quiz-screen">
+            <div class="student-info">
+                <div class="input-group">
+                    <label for="nama">Nama Lengkap:</label>
+                    <input type="text" id="nama" placeholder="Masukkan nama Anda">
+                </div>
+                <div class="input-group">
+                    <label for="kelas">Kelas / No. Absen:</label>
+                    <input type="text" id="kelas" placeholder="Contoh: 8A / 12">
+                </div>
+            </div>
+
+            <div class="timer-container">
+                <span>Sisa Waktu Ujian:</span>
+                <span id="timer" class="timer">60:00</span>
+            </div>
+
+            <div id="questions-container"></div>
+
+            <button class="btn" onclick="submitQuiz()">Selesai & Kumpulkan Jawaban</button>
+        </div>
+
+        <div id="result-screen">
+            <h2>Hasil Ujian Interaktif</h2>
+            <p id="res-nama" style="font-weight: bold; margin-bottom: 2px;"></p>
+            <p id="res-kelas" style="color: #666; margin-top: 0;"></p>
+            
+            <div class="score-box" id="res-score">0</div>
+            
+            <div id="status-message" class="status-msg"></div>
+            <p id="res-detail"></p>
+
+            <div id="action-buttons">
+                <button class="btn" onclick="downloadResult()">Unduh Hasil Nilai (TXT)</button>
+                <button class="btn btn-wa" onclick="sendWA()">Kirim Nilai ke Guru via WhatsApp</button>
+                <button id="btn-repeat" class="btn btn-retry" onclick="resetQuiz()" style="display:none;">Ulangi Ujian (Kembali ke Soal)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Switch Tab Function
+function openTab(tabId, event) {
+    const contents = document.querySelectorAll('.tab-content');
+    const buttons = document.querySelectorAll('.tab-btn');
+    
+    contents.forEach(content => content.classList.remove('active'));
+    buttons.forEach(button => button.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    if (event) {
+        event.currentTarget.classList.add('active');
+    }
+}
+
+// 45 Master Questions
+const masterQuestions = [
+    // Sub-Materi 1: VLOOKUP & HLOOKUP (12 Soal)
+    {q: "Fungsi spreadsheet yang digunakan untuk mencari data pada tabel acuan berbentuk vertikal adalah...", options: ["HLOOKUP", "VLOOKUP", "INDEX", "MATCH"], answer: 1},
+    {q: "Fungsi spreadsheet yang digunakan untuk mencari data pada tabel acuan berbentuk horizontal adalah...", options: ["VLOOKUP", "HLOOKUP", "LOOKUP", "PIVOT"], answer: 1},
+    {q: "Argumen ke-3 pada sintaks =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]) menunjukkan...", options: ["Kunci pencarian", "Nomor baris data", "Nomor kolom data yang diambil", "Jenis pencarian exact match"], answer: 2},
+    {q: "Sintaks =HLOOKUP(A2, D5:G10, 3, FALSE) mengindikasikan pengambil data pada baris ke-...", options: ["1", "2", "3", "5"], answer: 2},
+    {q: "Nilai argumen range_lookup 'FALSE' atau '0' pada VLOOKUP berguna untuk...", options: ["Pencarian data mendekati", "Pencarian data persis/persis sama", "Mengabaikan huruf kapital", "Mengurutkan data otomatis"], answer: 1},
+    {q: "Jika data pada tabel acuan tersusun secara mendatar (baris ke samping), fungsi yang tepat adalah...", options: ["VLOOKUP", "HLOOKUP", "COUNTIF", "SUMIF"], answer: 1},
+    {q: "Pesan kesalahan #N/A pada penggunaan VLOOKUP berarti...", options: ["Kolom kurang lebar", "Data kunci tidak ditemukan pada tabel acuan", "Rumus salah ketik", "Terjadi pembagian dengan nol"], answer: 1},
+    {q: "Pada rumus =VLOOKUP(C2, $A$10:$D$20, 2, FALSE), simbol tanda dolar ($) berfungsi untuk...", options: ["Mengubah angka menjadi mata uang", "Kunci/mengunci rentang tabel acuan agar tidak bergeser", "Menghitung jumlah data", "Menandakan format teks"], answer: 1},
+    {q: "Posisi kolom pertama dalam tabel acuan VLOOKUP harus selalu memuat...", options: ["Nilai acuan / kunci pencarian", "Hasil pencarian", "Angka numerik saja", "Nama tabel"], answer: 0},
+    {q: "Fungsi HLOOKUP membaca tabel acuan dari arah...", options: ["Atas ke bawah", "Kiri ke kanan (horizontal)", "Bawah ke atas", "Kanan ke kiri"], answer: 1},
+    {q: "Di dalam VLOOKUP, jika col_index_num bernilai kurang dari 1, maka akan menghasilkan error...", options: ["#VALUE!", "#REF!", "#N/A", "#NAME?"], answer: 0},
+    {q: "Keuntungan utama menggunakan VLOOKUP dibanding fungsi IF bercabang banyak adalah...", options: ["Rumus lebih singkat dan otomatis menyesuaikan tabel acuan", "Tampilan tabel jadi berwarna", "Proses hitung lebih lambat", "Hanya bisa dipakai di angka"], answer: 0},
+
+    // Sub-Materi 2: Reference & INDEX-MATCH (11 Soal)
+    {q: "Fungsi yang mengambil nilai sel berdasarkan posisi baris dan kolom dalam suatu rentang dinamakan...", options: ["MATCH", "INDEX", "LOOKUP", "CHOOSE"], answer: 1},
+    {q: "Fungsi yang mengembalikan posisi relatif (urutan angka) dari suatu nilai dalam rentang data adalah...", options: ["INDEX", "MATCH", "VLOOKUP", "COUNT"], answer: 1},
+    {q: "Kombinasi fungsi pencarian yang fleksibel dan mampu mencari data ke arah kiri maupun kanan adalah...", options: ["VLOOKUP + HLOOKUP", "INDEX + MATCH", "SUMIF + COUNTIF", "IF + AND"], answer: 1},
+    {q: "Penulisan referensi sel $A$5 termasuk dalam kategori referensi alamat...", options: ["Relatif", "Absolut", "Semi-Absolut", "Dinamis"], answer: 1},
+    {q: "Penulisan referensi sel A$5 atau $A5 dinamakan referensi alamat...", options: ["Absolut", "Relatif", "Semi-Absolut (Campuran)", "Variabel"], answer: 2},
+    {q: "Saat rumus dengan referensi relatif A1 disalin satu baris ke bawah, alamat sel akan berubah menjadi...", options: ["A1", "A2", "B1", "$A$1"], answer: 1},
+    {q: "Tombol pintas (shortcut) pada keyboard untuk mengubah referensi relatif menjadi absolut adalah...", options: ["F2", "F4", "F8", "F12"], answer: 1},
+    {q: "Sintaks =INDEX(A1:C10, 4, 2) akan mengambil data pada baris ke-4 dan kolom ke-...", options: ["1", "2", "3", "4"], answer: 1},
+    {q: "Sintaks =MATCH(\"Budi\", A1:A10, 0) akan menghasilkan keluaran berupa...", options: ["Teks 'Budi'", "Nomor urut baris di mana kata 'Budi' ditemukan", "Nilai True/False", "Jumlah kata Budi"], answer: 1},
+    {q: "Kelemahan VLOOKUP yang dapat diatasi oleh INDEX-MATCH adalah...", options: ["VLOOKUP tidak dapat mengambil data di sebelah kiri kolom kunci", "VLOOKUP tidak bisa pakai angka", "VLOOKUP tidak bisa di Excel", "INDEX-MATCH rumusnya lebih pendek"], answer: 0},
+    {q: "Alamat sel yang TIDAK berubah sama sekali saat rumus disalin ke sel mana pun dinamakan sel...", options: ["Relatif", "Absolut", "Bebas", "Sekunder"], answer: 1},
+
+    // Sub-Materi 3: Visualisasi Data / Chart (11 Soal)
+    {q: "Proses menyajikan data angka dalam bentuk diagram atau grafik dinamakan...", options: ["Filtering", "Visualisasi Data", "Sorting", "Peringkasan Data"], answer: 1},
+    {q: "Jenis grafik yang paling tepat untuk menunjukkan perkembangan data dari waktu ke waktu (tren) adalah...", options: ["Bar Chart", "Line Chart (Grafik Garis)", "Pie Chart", "Scatter Plot"], answer: 1},
+    {q: "Jenis grafik yang paling tepat untuk melihat kontribusi persentase proporsi terhadap total keseluruhan adalah...", options: ["Column Chart", "Pie Chart (Grafik Lingkaran)", "Line Chart", "Area Chart"], answer: 1},
+    {q: "Jenis grafik yang paling sesuai untuk membandingkan nilai antar beberapa kategori adalah...", options: ["Bar/Column Chart (Grafik Batang)", "Pie Chart", "Line Chart", "Stock Chart"], answer: 0},
+    {q: "Bagian grafik yang menjelaskan keterangan warna atau simbol data dinamakan...", options: ["Chart Title", "Legend", "Gridlines", "Axis Title"], answer: 1},
+    {q: "Garis horizontal pada grafik 2 dimensi biasanya melambangkan...", options: ["Sumbu Y (Kategori/Waktu)", "Sumbu X (Kategori/Waktu)", "Sumbu Z", "Data Nilai"], answer: 1},
+    {q: "Langkah awal sebelum membuat grafik di aplikasi pengolah lembar kerja adalah...", options: ["Memilih warna background", "Blok/sorot data tabel yang akan dibuat grafik", "Mencetak kertas", "Menulis judul"], answer: 1},
+    {q: "Grafik yang digunakan untuk melihat persebaran dan hubungan korelatif antara dua variabel angka adalah...", options: ["Scatter Plot", "Pie Chart", "Bar Chart", "Line Chart"], answer: 0},
+    {q: "Elemen grafik yang memuat teks judul utama dinamakan...", options: ["Data Labels", "Chart Title", "Legend", "Plot Area"], answer: 1},
+    {q: "Angka yang muncul langsung di atas batang/garis grafik untuk menunjukkan nilai pasti sel disebut...", options: ["Data Labels", "Legend", "Gridlines", "Trendline"], answer: 0},
+    {q: "Fitur untuk mengubah gaya, warna, dan tampilan visual grafik dengan cepat terdapat di menu tab...", options: ["Page Layout", "Chart Design / Format", "Data", "Review"], answer: 1},
+
+    // Sub-Materi 4: Peringkasan Data & Pivot Table (11 Soal)
+    {q: "Fungsi yang digunakan untuk menjumlahkan data dengan satu syarat/kriteria tertentu adalah...", options: ["SUM", "SUMIF", "COUNTIF", "AVERAGEIF"], answer: 1},
+    {q: "Fungsi yang digunakan untuk menghitung banyaknya sel berisikan data dengan syarat tertentu adalah...", options: ["COUNT", "COUNTA", "COUNTIF", "SUMIF"], answer: 2},
+    {q: "Fungsi untuk menghitung nilai rata-rata dari sekelompok data berdasarkan kriteria tertentu adalah...", options: ["AVERAGE", "AVERAGEIF", "SUMIF", "MAXIF"], answer: 1},
+    {q: "Sintaks =SUMIF(A2:A10, \"Lunas\", C2:C10) berfungsi untuk...", options: ["Menghitung jumlah orang yang Lunas", "Menjumlahkan nilai sel C2:C10 yang berstatus 'Lunas' di A2:A10", "Mencari rata-rata", "Menghapus data lunas"], answer: 1},
+    {q: "Fitur interaktif di Excel untuk meringkas dan mengelompokkan ribuan data secara cepat tanpa rumus adalah...", options: ["Filter", "Pivot Table", "VLOOKUP", "Sort"], answer: 1},
+    {q: "Sintaks =COUNTIF(B2:B20, \">80\") berfungsi untuk...", options: ["Menjumlahkan angka di atas 80", "Menghitung berapa banyak sel di B2:B20 yang bernilai lebih dari 80", "Mencari rata-rata angka 80", "Mengubah angka jadi 80"], answer: 1},
+    {q: "Empat area utama dalam panel pembuatan Pivot Table adalah...", options: ["Filters, Columns, Rows, Values", "Input, Output, Process, Storage", "Header, Footer, Body, Margin", "File, Edit, View, Help"], answer: 0},
+    {q: "Proses mengurutkan data dari A ke Z atau dari terkecil ke terbesar dinamakan...", options: ["Sort Ascending", "Sort Descending", "Filter", "Validation"], answer: 0},
+    {q: "Proses menyaring data untuk menampilkan hanya baris yang memenuhi kriteria tertentu dinamakan...", options: ["Sorting", "Filtering", "Grouping", "Merging"], answer: 1},
+    {q: "Fungsi Pivot Table yang digunakan untuk memperbarui data saat tabel sumber mengalami perubahan adalah...", options: ["Update", "Refresh", "Re-open", "Recalculate"], answer: 1},
+    {q: "Sintaks =SUMIF(C2:C15, \"Sederhana\", D2:D15) memiliki argumen range kriteria pada sel...", options: ["C2:C15", "\"Sederhana\"", "D2:D15", "Semua benar"], answer: 0}
+];
+
+let questions = [];
+let timeRemaining = 3600; // 60 menit
+let timerInterval;
+let finalScore = 0;
+let correctCount = 0;
+let studentName = "";
+let studentClass = "";
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function initQuiz() {
+    timeRemaining = 3600;
+    
+    let shuffledMaster = JSON.parse(JSON.stringify(masterQuestions));
+    shuffle(shuffledMaster);
+    
+    // Ambil 40 soal acak dari 45 bank soal
+    questions = shuffledMaster.slice(0, 40);
+
+    const container = document.getElementById('questions-container');
+    container.innerHTML = '';
+
+    questions.forEach((qObj, index) => {
+        let originalOptions = qObj.options.map((opt, idx) => ({ text: opt, isCorrect: idx === qObj.answer }));
+        let shuffledOptions = shuffle(originalOptions);
+
+        let qHTML = `<div class="question-card">
+            <div class="question-title">${index + 1}. ${qObj.q}</div>
+            <div class="options">`;
+
+        shuffledOptions.forEach((opt, optIndex) => {
+            qHTML += `<label>
+                <input type="radio" name="q${index}" value="${opt.isCorrect ? '1' : '0'}">
+                ${String.fromCharCode(65 + optIndex)}. ${opt.text}
+            </label>`;
+        });
+
+        qHTML += `</div></div>`;
+        container.innerHTML += qHTML;
+    });
+
+    startTimer();
+}
+
+function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        let minutes = Math.floor(timeRemaining / 60);
+        let seconds = timeRemaining % 60;
+
+        document.getElementById('timer').innerText = 
+            `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert('Waktu ujian telah habis!');
+            submitQuiz();
+        }
+    }, 1000);
+}
+
+function submitQuiz() {
+    studentName = document.getElementById('nama').value.trim();
+    studentClass = document.getElementById('kelas').value.trim();
+
+    if (!studentName || !studentClass) {
+        alert('Mohon isi Nama Lengkap dan Kelas/No. Absen terlebih dahulu!');
+        return;
+    }
+
+    clearInterval(timerInterval);
+
+    correctCount = 0;
+    questions.forEach((_, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selected && selected.value === '1') {
+            correctCount++;
+        }
+    });
+
+    finalScore = (correctCount / questions.length) * 100;
+
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+
+    document.getElementById('res-nama').innerText = "Nama: " + studentName;
+    document.getElementById('res-kelas').innerText = "Kelas/Absen: " + studentClass;
+    document.getElementById('res-score').innerText = finalScore.toFixed(0);
+    document.getElementById('res-detail').innerText = `Jumlah Benar: ${correctCount} dari ${questions.length} Soal`;
+
+    const statusBox = document.getElementById('status-message');
+    const repeatBtn = document.getElementById('btn-repeat');
+
+    if (finalScore >= 80) {
+        statusBox.className = "status-msg status-success";
+        statusBox.innerText = "Selamat, Anda BERHASIL! (Lulus KKM)";
+        repeatBtn.style.display = "none";
+    } else {
+        statusBox.className = "status-msg status-fail";
+        statusBox.innerText = "Maaf, Anda BELUM BERHASIL. Silakan Mengulang Lagi!";
+        repeatBtn.style.display = "block";
+    }
+}
+
+function resetQuiz() {
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    initQuiz();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function downloadResult() {
+    const textContent = `====================================
+LAPORAN HASIL UJIAN INTERAKTIF
+Mata Pelajaran : Informatika (Analisis Data)
+Sekolah        : SMP Negeri 2 Ngadirejo
+Pengampu       : Budi Winarno, S.Kom.
+====================================
+Nama           : ${studentName}
+Kelas/No.Absen : ${studentClass}
+Jumlah Benar   : ${correctCount} / ${questions.length}
+NILAI AKHIR    : ${finalScore.toFixed(0)}
+KETERANGAN     : ${finalScore >= 80 ? 'BERHASIL / LULUS' : 'BELUM BERHASIL / REVISI'}
+====================================`;
+
+    const blob = new Blob([textContent], { type: 'text/plain' });
+    const anchor = document.createElement('a');
+    anchor.download = `Nilai_AnalisisData_${studentName.replace(/\s+/g, '_')}.txt`;
+    anchor.href = window.URL.createObjectURL(blob);
+    anchor.click();
+}
+
+function sendWA() {
+    const statusText = finalScore >= 80 ? "BERHASIL" : "BELUM BERHASIL";
+    const textMsg = `Halo Pak Budi Winarno, S.Kom.,%0ASaya telah selesai mengerjakan Ujian Informatika Analisis Data.%0A%0ANama: *${studentName}*%0AKelas: *${studentClass}*%0ABenar: ${correctCount}/${questions.length}%0ANilai: *${finalScore.toFixed(0)}*%0AKeterangan: *${statusText}*`;
+    window.open(`https://api.whatsapp.com/send?text=${textMsg}`, '_blank');
+}
+
+window.onload = initQuiz;
+</script>
+</body>
+</html>
